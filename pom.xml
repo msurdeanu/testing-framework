@@ -41,6 +41,12 @@
             <version>0.36</version>
         </dependency>
         <dependency>
+            <groupId>us.abstracta.jmeter</groupId>
+            <artifactId>jmeter-java-dsl-blazemeter</artifactId>
+            <version>0.36</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${json-path.version}</version>
@@ -84,6 +90,12 @@
                     <groupId>org.mockito</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>us.abstracta.jmeter</groupId>
+            <artifactId>jmeter-java-dsl-blazemeter</artifactId>
+            <version>0.36</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
