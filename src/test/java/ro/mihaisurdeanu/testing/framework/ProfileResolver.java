@@ -1,5 +1,6 @@
 package ro.mihaisurdeanu.testing.framework;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.test.context.ActiveProfilesResolver;
 
 /**
@@ -9,7 +10,7 @@ import org.springframework.test.context.ActiveProfilesResolver;
 public class ProfileResolver implements ActiveProfilesResolver {
 
     @Override
-    public String[] resolve(final Class<?> clazz) {
+    public String[] resolve(final @NotNull Class<?> clazz) {
         return new String[]{EnvironmentResolver.resolveBasedOnCucumberTag().getProfile()};
     }
 

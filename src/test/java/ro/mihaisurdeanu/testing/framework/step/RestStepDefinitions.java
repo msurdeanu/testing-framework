@@ -10,12 +10,14 @@ import ro.mihaisurdeanu.testing.framework.model.Constraint;
 import ro.mihaisurdeanu.testing.framework.model.HttpRequestDetails;
 import ro.mihaisurdeanu.testing.framework.model.Operator;
 import ro.mihaisurdeanu.testing.framework.serializer.JsonFactory;
+import ro.mihaisurdeanu.testing.framework.service.HttpClientSupportService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static ro.mihaisurdeanu.testing.framework.serializer.JsonFactory.fromJsonToMap;
 
 /**
  * @author Mihai Surdeanu
@@ -26,7 +28,7 @@ public class RestStepDefinitions implements En {
 
     public RestStepDefinitions(final SpringBaseTest baseTest) {
         DataTableType("[blank]", (Map<String, String> entry) -> HttpRequestDetails.builder()
-                .method(HttpMethod.valueOf(Optional.ofNullable(entry.get("method")).orElse("GET")))
+                .method(HttpMethod.valueOf(ofNullable(entry.get("method")).orElse("GET")))
                 .url(baseTest.resolvePlaceholders(entry.get("url")))
                 .body(baseTest.resolvePlaceholders(entry.get("body")))
                 .headers(getHeadersAsMap(baseTest.resolvePlaceholders(entry.get("headers"))))
@@ -34,31 +36,31 @@ public class RestStepDefinitions implements En {
 
         DataTableType("[blank]", (Map<String, String> entry) -> Constraint.builder()
                 .expression(baseTest.resolvePlaceholders(entry.get("expression")))
-                .operator(Operator.of(Optional.ofNullable(entry.get("operator")).orElse("=")))
+                .operator(Operator.of(ofNullable(entry.get("operator")).orElse("=")))
                 .expected(baseTest.resolvePlaceholders(entry.get("expected")))
                 .build());
 
         When("I make HTTP request \"{word}\" with no authentication to", (String id, DataTable requestDetailsTable) -> {
             final HttpRequestDetails httpRequestDetails = requestDetailsTable.convert(HttpRequestDetails.class, true);
-            baseTest.getHttpClientSupportService().doRequest(id, null, httpRequestDetails);
+            baseTest.getService(HttpClientSupportService.class).doRequest(id, null, httpRequestDetails);
         });
 
         Then("status code for request \"{word}\" is \"{int}\"", (String id, Integer status) -> {
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
 
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getStatusCode()).isEqualTo(status);
         });
 
         Then("response body for request \"{word}\" is a string", (String id) -> {
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
 
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getBody()).isInstanceOf(String.class);
         });
 
         Then("response body for request \"{word}\" is string and contains {string}", (String id, String contains) -> {
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
 
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getBody()).isInstanceOf(String.class);
@@ -66,7 +68,7 @@ public class RestStepDefinitions implements En {
         });
 
         Then("response body for request \"{word}\" is string and starts with {string}", (String id, String startsWith) -> {
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
 
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getBody()).isInstanceOf(String.class);
@@ -74,7 +76,7 @@ public class RestStepDefinitions implements En {
         });
 
         Then("response body for request \"{word}\" is string and ends with {string}", (String id, String endsWith) -> {
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
 
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getBody()).isInstanceOf(String.class);
@@ -82,7 +84,7 @@ public class RestStepDefinitions implements En {
         });
 
         Then("convert response body for request \"{word}\" to JSON format", (String id) -> {
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
 
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getBody()).isInstanceOf(String.class);
@@ -94,7 +96,7 @@ public class RestStepDefinitions implements En {
         Then("response body for request \"{word}\" is in JSON format and meets imposed constraints", (String id, DataTable constraintsTable) -> {
             final List<Constraint> constraints = constraintsTable.asList(Constraint.class);
 
-            final var httpClientResponse = baseTest.getHttpClientSupportService().getClientResponse(id);
+            final var httpClientResponse = baseTest.getService(HttpClientSupportService.class).getClientResponse(id);
             assertThat(httpClientResponse).isNotNull();
             assertThat(httpClientResponse.getBody()).isInstanceOf(DocumentContext.class);
 
@@ -104,7 +106,7 @@ public class RestStepDefinitions implements En {
 
     private Map<String, String> getHeadersAsMap(final String headers) {
         try {
-            return JsonFactory.fromJsonToMap(Optional.ofNullable(headers).orElse("{}"));
+            return fromJsonToMap(ofNullable(headers).orElse("{}"));
         } catch (JsonProcessingException e) {
             log.warn("Invalid JSON format for headers provided as input.", e);
         }

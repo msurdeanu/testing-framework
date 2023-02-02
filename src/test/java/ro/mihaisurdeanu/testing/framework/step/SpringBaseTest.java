@@ -6,8 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import ro.mihaisurdeanu.testing.framework.Application;
-import ro.mihaisurdeanu.testing.framework.service.HttpClientSupportService;
-import ro.mihaisurdeanu.testing.framework.service.PerformanceSupportService;
+import ro.mihaisurdeanu.testing.framework.exception.TestingException;
 import ro.mihaisurdeanu.testing.framework.service.ScenarioSupportService;
 
 import java.util.regex.Matcher;
@@ -32,20 +31,8 @@ public class SpringBaseTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-    public <T> T getBean(final Class<T> clazz) {
+    public <T> T getService(final Class<T> clazz) {
         return applicationContext.getBean(clazz);
-    }
-
-    public HttpClientSupportService getHttpClientSupportService() {
-        return getBean(HttpClientSupportService.class);
-    }
-
-    public PerformanceSupportService getPerformanceSupportService() {
-        return getBean(PerformanceSupportService.class);
-    }
-
-    public ScenarioSupportService getScenarioSupportService() {
-        return getBean(ScenarioSupportService.class);
     }
 
     public String resolvePlaceholders(final String value) {
@@ -56,9 +43,9 @@ public class SpringBaseTest {
 
     private String matcherToStringCallback(final Matcher matcher) {
         final var placeholderName = matcher.group(1);
-        return ofNullable(getScenarioSupportService().getFromCache(placeholderName))
+        return ofNullable(getService(ScenarioSupportService.class).getFromCache(placeholderName))
                 .map(Object::toString)
-                .orElseThrow(() -> new RuntimeException("No entry found in test local cache for placeholder: " + placeholderName));
+                .orElseThrow(() -> new TestingException("No entry found in test local cache for placeholder: " + placeholderName));
     }
 
 }

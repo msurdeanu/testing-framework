@@ -23,6 +23,6 @@ import org.junit.runner.RunWith;
 )
 public class AllSequentialTests {
 
-  // Run all scenarios in sequential mode using a single thread
+    // Run all scenarios in sequential mode using a single thread.
 
 }

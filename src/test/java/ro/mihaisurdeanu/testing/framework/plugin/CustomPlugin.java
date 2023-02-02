@@ -11,6 +11,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * @author Mihai Surdeanu
@@ -19,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class CustomPlugin implements Plugin, ConcurrentEventListener {
 
-    private static final Map<String, Instant> TEST_CASE_MAP = new HashMap<>();
+    private static final Map<UUID, Instant> TEST_CASE_MAP = new HashMap<>();
 
     @Override
     public void setEventPublisher(EventPublisher eventPublisher) {
@@ -28,18 +31,14 @@ public class CustomPlugin implements Plugin, ConcurrentEventListener {
     }
 
     private void handleTestCaseStarted(TestCaseStarted testCaseStarted) {
-        TEST_CASE_MAP.put(testCaseStarted.getTestCase().getId().toString(), testCaseStarted.getInstant());
+        TEST_CASE_MAP.put(testCaseStarted.getTestCase().getId(), testCaseStarted.getInstant());
     }
 
     private void handleTestCaseFinished(TestCaseFinished testCaseFinished) {
-        final String testCaseId = testCaseFinished.getTestCase().getId().toString();
-        Instant startTime = TEST_CASE_MAP.remove(testCaseId);
-        if (startTime == null) {
-            return;
-        }
-
-        log.info("Test scenario with ID = {} took {} milliseconds to be executed. This information is available by listening to internal events.",
-                testCaseId, Duration.between(startTime, testCaseFinished.getInstant()).toMillis());
+        final var testCaseId = testCaseFinished.getTestCase().getId();
+        ofNullable(TEST_CASE_MAP.remove(testCaseId))
+                .ifPresent(time -> log.info("Test scenario with ID = {} took {} ms to be executed.",
+                        testCaseId, Duration.between(time, testCaseFinished.getInstant()).toMillis()));
     }
 
 }

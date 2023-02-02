@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 )
 public class AllParallelTests {
 
-  // Run all scenarios in parallel using 4 threads
+    // Run all scenarios in parallel using 4 threads.
+    // You can configure total number of parallel threads directly in pom file.
 
 }
