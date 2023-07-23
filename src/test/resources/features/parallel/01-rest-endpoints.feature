@@ -15,5 +15,4 @@ Feature: Test multiple REST endpoints provided by Wordpress platform
         When I make HTTP request "1" with no authentication to
             | url | https://aventurata.ro/wp-json/wp/v2/posts |
         Then status code for request "1" is "200"
-        Then response body for request "1" is a string
         Then convert response body for request "1" to JSON format

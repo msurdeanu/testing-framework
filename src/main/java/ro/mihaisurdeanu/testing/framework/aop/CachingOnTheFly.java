@@ -11,6 +11,9 @@ import ro.mihaisurdeanu.testing.framework.service.StatefulSupportService;
 
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+
 /**
  * @author Mihai Surdeanu
  * @since 1.0.0
@@ -21,6 +24,8 @@ import java.util.Optional;
 public class CachingOnTheFly {
 
     private static final String ID = "id";
+
+    private static final String IDS = "ids";
 
     @Around("@annotation(ro.mihaisurdeanu.testing.framework.aop.ReadCache)")
     public Object readCache(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -38,30 +43,31 @@ public class CachingOnTheFly {
             return proceedingJoinPoint.proceed();
         }
 
-        final var optionalId = findParamByName(proceedingJoinPoint);
+        final var optionalId = findParamById(proceedingJoinPoint);
         if (optionalId.isEmpty()) {
             proceedingJoinPoint.proceed();
         }
 
         final var object = proceedingJoinPoint.proceed();
         if (object != null) {
-            getAsStatefulSupportService(proceedingJoinPoint).putInCache(optionalId.get(), object);
+            getThisAsStatefulSupportService(proceedingJoinPoint).putInCache(optionalId.get(), object);
         }
 
         return object;
     }
 
+    @SuppressWarnings("unchecked")
     private Object delegateToCache(final ProceedingJoinPoint proceedingJoinPoint, boolean writeToCache) throws Throwable {
         if (isNotStateful(proceedingJoinPoint)) {
             return proceedingJoinPoint.proceed();
         }
 
-        final var optionalId = findParamByName(proceedingJoinPoint);
+        final var optionalId = findParamById(proceedingJoinPoint);
         if (optionalId.isEmpty()) {
             return writeToCache ? writeCache(proceedingJoinPoint) : proceedingJoinPoint.proceed();
         }
 
-        final var object = getAsStatefulSupportService(proceedingJoinPoint).getFromCache(optionalId.get());
+        final var object = getThisAsStatefulSupportService(proceedingJoinPoint).getFromCache(optionalId.get());
         if (object != null && ((MethodSignature) proceedingJoinPoint.getSignature()).getReturnType().isAssignableFrom(object.getClass())) {
             return object;
         }
@@ -73,26 +79,28 @@ public class CachingOnTheFly {
         return !(joinPoint.getThis() instanceof StatefulSupportService);
     }
 
-    private StatefulSupportService getAsStatefulSupportService(final ProceedingJoinPoint proceedingJoinPoint) {
+    private StatefulSupportService getThisAsStatefulSupportService(final ProceedingJoinPoint proceedingJoinPoint) {
         return (StatefulSupportService) proceedingJoinPoint.getThis();
     }
 
-    private Optional<String> findParamByName(final ProceedingJoinPoint proceedingJoinPoint) {
+    private Optional<String[]> findParamById(final ProceedingJoinPoint proceedingJoinPoint) {
         final var codeSignature = (CodeSignature) proceedingJoinPoint.getSignature();
         final var parameterNames = codeSignature.getParameterNames();
         final var parameterTypes = codeSignature.getParameterTypes();
 
         if (parameterNames.length != parameterTypes.length) {
-            return Optional.empty();
+            return empty();
         }
 
         for (int i = 0; i < parameterNames.length; i++) {
-            if (ID.equals(parameterNames[i]) && String.class.equals(parameterTypes[i])) {
-                return Optional.ofNullable((String) proceedingJoinPoint.getArgs()[i]);
+            if (ID.equals(parameterNames[i]) && !parameterTypes[i].isArray() && String.class.equals(parameterTypes[i])) {
+                return of(new String[]{(String) proceedingJoinPoint.getArgs()[i]});
+            } else if (IDS.equals(parameterNames[i]) && parameterTypes[i].isArray() && String.class.equals(parameterTypes[i].getComponentType())) {
+                return of((String[]) proceedingJoinPoint.getArgs()[i]);
             }
         }
 
-        return Optional.empty();
+        return empty();
     }
 
 }

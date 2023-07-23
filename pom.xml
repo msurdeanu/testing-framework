@@ -12,11 +12,12 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <cucumber.version>7.1.0</cucumber.version>
+        <spring.boot.version>2.7.8</spring.boot.version>
         <lombok.version>1.18.22</lombok.version>
-        <json-path.version>2.6.0</json-path.version>
-        <awaitility.version>4.1.1</awaitility.version>
-        <spring.boot.version>2.6.1</spring.boot.version>
+        <json-path.version>2.7.0</json-path.version>
+        <jmeter-java-dsl.version>1.7</jmeter-java-dsl.version>
+        <cucumber.version>7.11.1</cucumber.version>
+        <awaitility.version>4.2.0</awaitility.version>
     </properties>
 
     <dependencies>
@@ -36,20 +37,19 @@
             <version>${lombok.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json-path.version}</version>
+        </dependency>
+        <dependency>
             <groupId>us.abstracta.jmeter</groupId>
             <artifactId>jmeter-java-dsl</artifactId>
-            <version>1.7</version>
+            <version>${jmeter-java-dsl.version}</version>
         </dependency>
         <dependency>
             <groupId>us.abstracta.jmeter</groupId>
             <artifactId>jmeter-java-dsl-blazemeter</artifactId>
-            <version>1.7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>${json-path.version}</version>
+            <version>${jmeter-java-dsl.version}</version>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
@@ -90,12 +90,6 @@
                     <groupId>org.mockito</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>us.abstracta.jmeter</groupId>
-            <artifactId>jmeter-java-dsl-blazemeter</artifactId>
-            <version>0.36</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

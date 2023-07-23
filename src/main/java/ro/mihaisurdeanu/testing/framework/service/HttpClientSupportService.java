@@ -3,11 +3,12 @@ package ro.mihaisurdeanu.testing.framework.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import ro.mihaisurdeanu.testing.framework.aop.ReadCache;
 import ro.mihaisurdeanu.testing.framework.aop.WriteCache;
@@ -45,17 +46,17 @@ public class HttpClientSupportService extends StatefulSupportService {
                     .exchange(fromUriString(httpRequestDetails.getUrl()).build(true).toUri(),
                             httpRequestDetails.getMethod(),
                             getHttpEntity(httpRequestDetails.getBody(), httpRequestDetails.getHeaders()),
-                            String.class);
+                            Resource.class);
             httpClientResponseBuilder
                     .statusCode(responseEntity.getStatusCodeValue())
                     .body(responseEntity.getBody())
                     .headers(responseEntity.getHeaders());
-        } catch (HttpClientErrorException httpClientErrorException) {
-            log.warn("An exception occurred during HTTP request.", httpClientErrorException);
+        } catch (HttpStatusCodeException httpStatusCodeException) {
+            log.warn("An exception occurred during HTTP request.", httpStatusCodeException);
             httpClientResponseBuilder
-                    .statusCode(httpClientErrorException.getRawStatusCode())
-                    .body(httpClientErrorException.getResponseBodyAsString())
-                    .headers(httpClientErrorException.getResponseHeaders());
+                    .statusCode(httpStatusCodeException.getRawStatusCode())
+                    .body(httpStatusCodeException.getResponseBodyAsString())
+                    .headers(httpStatusCodeException.getResponseHeaders());
         }
 
         return httpClientResponseBuilder.build();
