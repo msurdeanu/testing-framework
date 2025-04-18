@@ -33,12 +33,12 @@ public class HttpClientSupportService extends StatefulSupportService {
     private final RestTemplate restTemplate;
 
     @ReadCache
-    public HttpClientResponse getClientResponse(final String id) {
+    public HttpClientResponse getClientResponse(String id) {
         throw new IllegalArgumentException("No HttpClientResponse could be found in test local cache after id = " + id);
     }
 
     @WriteCache
-    public HttpClientResponse doRequest(final String id, @Nullable final RestTemplate restTemplate, final HttpRequestDetails httpRequestDetails) {
+    public HttpClientResponse doRequest(String id, @Nullable RestTemplate restTemplate, HttpRequestDetails httpRequestDetails) {
         final var httpClientResponseBuilder = HttpClientResponse.builder();
 
         try {
@@ -62,7 +62,7 @@ public class HttpClientSupportService extends StatefulSupportService {
         return httpClientResponseBuilder.build();
     }
 
-    private HttpEntity<String> getHttpEntity(final String body, final Map<String, String> extraHeaders) {
+    private HttpEntity<String> getHttpEntity(String body, Map<String, String> extraHeaders) {
         final var headers = new HttpHeaders();
         extraHeaders.forEach(headers::set);
 

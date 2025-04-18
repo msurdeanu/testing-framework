@@ -8,6 +8,6 @@ import java.util.regex.Matcher;
  */
 public interface StringReplacerCallback {
 
-    String replace(final Matcher matcher);
+    String replace(Matcher matcher);
 
 }

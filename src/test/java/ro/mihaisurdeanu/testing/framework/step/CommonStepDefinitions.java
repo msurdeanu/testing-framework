@@ -13,7 +13,7 @@ import ro.mihaisurdeanu.testing.framework.service.ScenarioSupportService;
 @Slf4j
 public class CommonStepDefinitions implements En {
 
-    public CommonStepDefinitions(final SpringBaseTest baseTest) {
+    public CommonStepDefinitions(SpringBaseTest baseTest) {
         Before(1, (Scenario scenario) -> baseTest.getService(ScenarioSupportService.class).beforeScenarioRun(scenario.getId()));
         After(1, (Scenario scenario) -> baseTest.getService(ScenarioSupportService.class).afterScenarioRun());
 

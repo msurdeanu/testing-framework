@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import ro.mihaisurdeanu.testing.framework.service.StatefulSupportService;
@@ -28,17 +27,17 @@ public class CachingOnTheFly {
     private static final String IDS = "ids";
 
     @Around("@annotation(ro.mihaisurdeanu.testing.framework.aop.ReadCache)")
-    public Object readCache(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    public Object readCache(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         return delegateToCache(proceedingJoinPoint, false);
     }
 
     @Around("@annotation(ro.mihaisurdeanu.testing.framework.aop.ReadWriteCache)")
-    public Object readWriteCache(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    public Object readWriteCache(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         return delegateToCache(proceedingJoinPoint, true);
     }
 
     @Around("@annotation(ro.mihaisurdeanu.testing.framework.aop.WriteCache)")
-    public Object writeCache(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+    public Object writeCache(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         if (isNotStateful(proceedingJoinPoint)) {
             return proceedingJoinPoint.proceed();
         }
@@ -57,7 +56,7 @@ public class CachingOnTheFly {
     }
 
     @SuppressWarnings("unchecked")
-    private Object delegateToCache(final ProceedingJoinPoint proceedingJoinPoint, boolean writeToCache) throws Throwable {
+    private Object delegateToCache(ProceedingJoinPoint proceedingJoinPoint, boolean writeToCache) throws Throwable {
         if (isNotStateful(proceedingJoinPoint)) {
             return proceedingJoinPoint.proceed();
         }
@@ -75,18 +74,18 @@ public class CachingOnTheFly {
         return writeToCache ? writeCache(proceedingJoinPoint) : proceedingJoinPoint.proceed();
     }
 
-    private boolean isNotStateful(final ProceedingJoinPoint joinPoint) {
+    private boolean isNotStateful(ProceedingJoinPoint joinPoint) {
         return !(joinPoint.getThis() instanceof StatefulSupportService);
     }
 
-    private StatefulSupportService getThisAsStatefulSupportService(final ProceedingJoinPoint proceedingJoinPoint) {
+    private StatefulSupportService getThisAsStatefulSupportService(ProceedingJoinPoint proceedingJoinPoint) {
         return (StatefulSupportService) proceedingJoinPoint.getThis();
     }
 
-    private Optional<String[]> findParamById(final ProceedingJoinPoint proceedingJoinPoint) {
-        final var codeSignature = (CodeSignature) proceedingJoinPoint.getSignature();
-        final var parameterNames = codeSignature.getParameterNames();
-        final var parameterTypes = codeSignature.getParameterTypes();
+    private Optional<String[]> findParamById(ProceedingJoinPoint proceedingJoinPoint) {
+        final var methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
+        final var parameterNames = methodSignature.getParameterNames();
+        final var parameterTypes = methodSignature.getParameterTypes();
 
         if (parameterNames.length != parameterTypes.length) {
             return empty();

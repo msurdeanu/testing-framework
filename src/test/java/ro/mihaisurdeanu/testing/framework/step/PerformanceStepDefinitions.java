@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class PerformanceStepDefinitions implements En {
 
-    public PerformanceStepDefinitions(final SpringBaseTest baseTest) {
+    public PerformanceStepDefinitions(SpringBaseTest baseTest) {
         DataTableType("[blank]", (Map<String, String> entry) -> BlazeMeterDetails.builder()
                 .token(baseTest.resolvePlaceholders(entry.get("token")))
                 .testName(baseTest.resolvePlaceholders(entry.get("testName")))

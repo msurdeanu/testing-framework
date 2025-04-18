@@ -6,7 +6,7 @@ package ro.mihaisurdeanu.testing.framework.exception;
  */
 public class TestingException extends RuntimeException {
 
-    public TestingException(final String message) {
+    public TestingException(String message) {
         super(message);
     }
 

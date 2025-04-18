@@ -16,13 +16,13 @@ public abstract class StatefulSupportService {
 
     private static final Map<String, Map<String, Object>> OBJECT_CACHE_MAP = new ConcurrentHashMap<>();
 
-    public Object getFromCache(final String key) {
+    public Object getFromCache(String key) {
         return ofNullable(OBJECT_CACHE_MAP.get(Thread.currentThread().getName()))
                 .map(threadCache -> threadCache.get(key))
                 .orElse(null);
     }
 
-    public Object getFromCache(final String[] keys) {
+    public Object getFromCache(String[] keys) {
         if (keys == null || keys.length != 1) {
             return null;
         }
@@ -30,7 +30,7 @@ public abstract class StatefulSupportService {
         return getFromCache(keys[0]);
     }
 
-    public void putInCache(final String key, final Object value) {
+    public void putInCache(String key, Object value) {
         final var threadName = Thread.currentThread().getName();
 
         var threadCache = OBJECT_CACHE_MAP.get(threadName);
@@ -43,7 +43,7 @@ public abstract class StatefulSupportService {
         }
     }
 
-    public void putInCache(final String[] keys, final Object value) {
+    public void putInCache(String[] keys, Object value) {
         final var valueIsNotArray = !value.getClass().isArray();
         if (keys.length == 1 && valueIsNotArray) {
             putInCache(keys[0], value);

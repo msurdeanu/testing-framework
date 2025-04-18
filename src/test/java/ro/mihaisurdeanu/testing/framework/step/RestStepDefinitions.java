@@ -30,7 +30,7 @@ import static ro.mihaisurdeanu.testing.framework.serializer.JsonFactory.fromJson
 @Slf4j
 public class RestStepDefinitions implements En {
 
-    public RestStepDefinitions(final SpringBaseTest baseTest) {
+    public RestStepDefinitions(SpringBaseTest baseTest) {
         DataTableType("[blank]", (Map<String, String> entry) -> HttpRequestDetails.builder()
                 .method(HttpMethod.valueOf(ofNullable(entry.get("method")).orElse("GET")))
                 .url(baseTest.resolvePlaceholders(entry.get("url")))

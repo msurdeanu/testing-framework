@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfilesResolver;
 public class ProfileResolver implements ActiveProfilesResolver {
 
     @Override
-    public String[] resolve(final @NotNull Class<?> clazz) {
+    public String[] resolve(@NotNull Class<?> clazz) {
         return new String[]{EnvironmentResolver.resolveBasedOnCucumberTag().getProfile()};
     }
 

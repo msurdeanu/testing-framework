@@ -5,6 +5,8 @@ import lombok.Getter;
 
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
+
 /**
  * @author Mihai Surdeanu
  * @since 1.0.0
@@ -18,16 +20,20 @@ public class Constraint implements Consumer<Object> {
     private String expected;
 
     @Override
-    public void accept(final Object object) {
-        if (object instanceof Integer) {
-            operator.assertValueAgainstExpected((Integer) object, Integer.parseInt(expected), getDescription());
-        } else {
-            operator.assertValueAgainstExpected(object.toString(), expected, getDescription());
+    public void accept(Object object) {
+        switch (object) {
+            case Integer intObj ->
+                    operator.assertValueAgainstExpected(intObj, Integer.parseInt(expected), getDescription());
+            case Float floatObj ->
+                    operator.assertValueAgainstExpected(floatObj, Float.parseFloat(expected), getDescription());
+            case Double doubleObj ->
+                    operator.assertValueAgainstExpected(doubleObj, Double.parseDouble(expected), getDescription());
+            default -> operator.assertValueAgainstExpected(object.toString(), expected, getDescription());
         }
     }
 
     private String getDescription() {
-        return String.format("check constraint expression '%s' and operator '%s'", expression, operator.getValue());
+        return format("check constraint expression '%s' and operator '%s'", expression, operator.getValue());
     }
 
 }

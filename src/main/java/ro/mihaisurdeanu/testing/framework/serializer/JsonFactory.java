@@ -31,18 +31,18 @@ public final class JsonFactory {
         OBJECT_MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
-    public static JsonNode toJsonNode(final String content) throws IOException {
+    public static JsonNode toJsonNode(String content) throws IOException {
         return OBJECT_MAPPER.readTree(content);
     }
 
-    public static Map<String, String> fromJsonToMap(final @NonNull String body) throws JsonProcessingException {
+    public static Map<String, String> fromJsonToMap(@NonNull String body) throws JsonProcessingException {
         final TypeReference<Map<String, String>> typeReference = new TypeReference<>() {
         };
 
         return OBJECT_MAPPER.readValue(body, typeReference);
     }
 
-    public static DocumentContext fromJsonToDocumentContext(final @NonNull String body) {
+    public static DocumentContext fromJsonToDocumentContext(@NonNull String body) {
         return JsonPath.parse(body);
     }
 

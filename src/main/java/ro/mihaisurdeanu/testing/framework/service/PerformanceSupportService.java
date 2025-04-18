@@ -30,45 +30,40 @@ import static us.abstracta.jmeter.javadsl.JmeterDsl.*;
 public class PerformanceSupportService extends StatefulSupportService {
 
     @ReadCache
-    public TestPlanStats getTestPlanStats(final String id) {
+    public TestPlanStats getTestPlanStats(String id) {
         throw new IllegalArgumentException("No TestPlanStats could be found in test local cache after id = " + id);
     }
 
     @WriteCache
-    public TestPlanStats createAndScheduleLocalTestPlan(final String id,
-                                                        final DslThreadGroup dslThreadGroup) throws IOException {
+    public TestPlanStats createAndScheduleLocalTestPlan(String id, DslThreadGroup dslThreadGroup) throws IOException {
         return testPlan(dslThreadGroup, jtlWriter("target", "test-" + id + ".jtl"))
                 .run();
     }
 
     @WriteCache
-    public TestPlanStats createAndScheduleRemoteTestPlan(final String id,
-                                                         final DslThreadGroup dslThreadGroup,
-                                                         final DslJmeterEngine dslJmeterEngine) throws IOException, InterruptedException, TimeoutException {
+    public TestPlanStats createAndScheduleRemoteTestPlan(String id, DslThreadGroup dslThreadGroup,
+                                                         DslJmeterEngine dslJmeterEngine) throws IOException, InterruptedException, TimeoutException {
         return testPlan(dslThreadGroup, jtlWriter("target", "test-" + id + ".jtl"))
                 .runIn(dslJmeterEngine);
     }
 
     @ReadCache
-    public DslDefaultThreadGroup getThreadGroup(final String id) {
+    public DslDefaultThreadGroup getThreadGroup(String id) {
         throw new IllegalArgumentException("No DslThreadGroup could be found in test local cache after id = " + id);
     }
 
     @WriteCache
-    public DslDefaultThreadGroup createThreadGroup(final String id,
-                                                   final int threads,
-                                                   final int iterations) {
+    public DslDefaultThreadGroup createThreadGroup(String id, int threads, int iterations) {
         return threadGroup(id, threads, iterations);
     }
 
     @ReadCache
-    public DslHttpSampler getHttpSampler(final String id) {
+    public DslHttpSampler getHttpSampler(String id) {
         throw new IllegalArgumentException("No DslHttpSampler could be found in test local cache after id = " + id);
     }
 
     @WriteCache
-    public DslHttpSampler createHttpSampler(final String id,
-                                            final HttpRequestDetails httpRequestDetails) {
+    public DslHttpSampler createHttpSampler(String id, HttpRequestDetails httpRequestDetails) {
         final var dslHttpSampler = httpSampler(httpRequestDetails.getUrl()).method(httpRequestDetails.getMethod().toString());
         ofNullable(httpRequestDetails.getBody()).ifPresent(dslHttpSampler::body);
         ofNullable(httpRequestDetails.getHeaders()).orElse(Map.of()).forEach(dslHttpSampler::header);
@@ -76,13 +71,12 @@ public class PerformanceSupportService extends StatefulSupportService {
     }
 
     @ReadCache
-    public DslJmeterEngine getEngine(final String id) {
+    public DslJmeterEngine getEngine(String id) {
         throw new IllegalArgumentException("No DslJmeterEngine could be found in test local cache after id = " + id);
     }
 
     @WriteCache
-    public DslJmeterEngine createBlazeMeterEngine(final String id,
-                                                  final BlazeMeterDetails blazeMeterDetails) {
+    public DslJmeterEngine createBlazeMeterEngine(String id, BlazeMeterDetails blazeMeterDetails) {
         return new BlazeMeterEngine(blazeMeterDetails.getToken())
                 .testName(blazeMeterDetails.getTestName())
                 .totalUsers(blazeMeterDetails.getTotalUsers())
@@ -92,9 +86,7 @@ public class PerformanceSupportService extends StatefulSupportService {
                 .testTimeout(Duration.ofSeconds(blazeMeterDetails.getTestTimeout()));
     }
 
-    public void createRegexExtractor(final DslHttpSampler dslHttpSampler,
-                                     final String name,
-                                     final String value) {
+    public void createRegexExtractor(DslHttpSampler dslHttpSampler, String name, String value) {
         dslHttpSampler.children(regexExtractor(name, value));
     }
 

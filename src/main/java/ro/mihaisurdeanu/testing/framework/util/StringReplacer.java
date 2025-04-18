@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StringReplacer {
 
-    public static String replace(final String value, final Pattern regex, final StringReplacerCallback callback) {
+    public static String replace(String value, Pattern regex, StringReplacerCallback callback) {
         final var builder = new StringBuilder();
         final var regexMatcher = regex.matcher(value);
         while (regexMatcher.find()) {
