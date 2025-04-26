@@ -9,9 +9,14 @@ import org.springframework.test.context.ActiveProfilesResolver;
  */
 public class ProfileResolver implements ActiveProfilesResolver {
 
+    public static final String PRODUCTION_PROFILE = "production";
+    public static final String NON_PRODUCTION_PROFILE = "non-production";
+
     @Override
     public String[] resolve(@NotNull Class<?> clazz) {
-        return new String[]{EnvironmentResolver.resolveBasedOnCucumberTag().getProfile()};
+        final var environmentTag = EnvironmentResolver.resolveBasedOnCucumberTag();
+        return new String[]{environmentTag.getProfile(),
+                environmentTag == EnvironmentResolver.EnvironmentTag.PROD ? PRODUCTION_PROFILE : NON_PRODUCTION_PROFILE};
     }
 
 }
